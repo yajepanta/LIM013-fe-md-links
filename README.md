@@ -8,9 +8,8 @@
 * [4. Consideraciones generales](#4-consideraciones-generales)
 * [5. Criterios de aceptación mínimos del proyecto](#5-criterios-de-aceptación-mínimos-del-proyecto)
 * [6. Entregables](#6-entregables)
-* [7. Hacker edition](#7-hacker-edition)
-* [8. Pistas, tips y lecturas complementarias](#8-pistas-tips-y-lecturas-complementarias)
-* [9. Checklist](#9-checklist)
+* [7. Pistas, tips y lecturas complementarias](#7-pistas-tips-y-lecturas-complementarias)
+* [8. Checklist](#8-checklist)
 
 ***
 
@@ -128,6 +127,8 @@ A continuación puedes ver los objetivos de aprendizaje de este proyecto:
   _functions_, _lines_ y _branches_. Te recomendamos explorar [Jest](https://jestjs.io/)
   para tus pruebas unitarias.
 
+* Los tests unitarios deben cubrir un mínimo del 70% de statements, functions, lines y branches., ademas de pasar los test y el linter. Te recomendamos utilizar Jest para tus pruebas unitarias.
+
 * Para este proyecto no está permitido utilizar `async/await`.
 
 * Para este proyecto es opcional el uso de ES Modules `(import/export)`, en el
@@ -139,9 +140,15 @@ A continuación puedes ver los objetivos de aprendizaje de este proyecto:
 Para comenzar este proyecto tendrás que hacer un _fork_ y _clonar_ este
 repositorio.
 
-Antes de comenzar a codear, es necesario crear un plan de acción. Esto debería
-quedar detallado en el `README.md` de tu repo y en una serie de _issues_
-y _milestones_ para priorizar y organizar el trabajo, y para poder hacer
+Antes de comenzar a codear, es necesario que pensemos en la arquitectura y
+boilerplate del proyecto, por lo que `antes de que empieces tu planificacion
+y a trabajar en la funcionalidad de tu proyecto deberás de haber
+creado tu boilerplate y tus tests`. Esto debería quedar
+detallado en tu repo y haberte asegurado de haber recibido feedback de uno
+de tus coaches. Una vez hayas terminado de definir la arquitectura y los tests
+de tu proyecto estarás lista para iniciar con tu **planificacion** por lo cual
+deberas de hacer uso de una serie de _issues_ y _milestones_ para priorizar
+tus tareas y crear un _project_ para organizar el trabajo y poder hacer
 seguimiento de tu progreso.
 
 Dentro de cada _milestone_ se crearán y asignarán los _issues_ que cada quien
@@ -149,20 +156,33 @@ considere necesarios.
 
 ### Archivos del proyecto
 
-* `README.md` con descripción del módulo, instrucciones de instalación/uso,
-  documentación del API y ejemplos. Todo lo relevante para que cualquier
-  developer que quiera usar tu librería pueda hacerlo sin inconvenientes.
-* `index.js`: Desde este archivo debes exportar una función (`mdLinks`).
-* `package.json` con nombre, versión, descripción, autores, licencia,
-  dependencias, scripts (pretest, test, ...)
-* `.editorconfig` con configuración para editores de texto. Este archivo no se
-  debe cambiar.
-* `.eslintrc` con configuración para linter. Este archivo no
-  se debe cambiar.
-* `.gitignore` para ignorar `node_modules` u otras carpetas que no deban
-  incluirse en control de versiones (`git`).
-* `test/md-links.spec.js` debe contener los tests unitarios para la función
-  `mdLinks()`. Tu inplementación debe pasar estos tets.
+Estos son los criterios de lo que debe ocurrir para que se satisfagan 
+las necesidades del usuario:
+
+- Instalar la libreria via `npm install --global <github-user>/md-links`
+
+### `README.md`
+
+- Encontrar el *pseudo codigo* o *diagrama de flujo* con el algoritmo que
+  soluciona el problema.
+- Encontrar un board con el backlog para la implementación de la librería.
+- Encontrar la documentación técnica de la librería.
+- Encontrar la Guía de uso e instalación de la librería.
+
+### API `mdLinks(path, opts)`
+
+- El módulo exporta una función con la interfaz (API) esperada.
+- El módulo implementa soporte para archivo individual
+- El módulo implementa soporte para directorios
+- El módulo implementa `options.validate`
+
+### CLI
+
+- Expone ejecutable `md-links` en el path (configurado en `package.json`)
+- Se ejecuta sin errores / output esperado.
+- El ejecutable implementa `--validate`.
+- El ejecutable implementa `--stats`.
+- El ejecutable implementa `--validate` y `--stats` juntos.
 
 ### JavaScript API
 
@@ -203,7 +223,7 @@ mdLinks("./some/example.md")
 
 mdLinks("./some/example.md", { validate: true })
   .then(links => {
-    // => [{ href, text, file, status, ok }]
+    // => [{ href, text, file, status, message }]
   })
   .catch(console.error);
 
@@ -284,20 +304,9 @@ Módulo instalable via `npm install <github-user>/md-links`. Este módulo debe
 incluir tanto un ejecutable como una interfaz que podamos importar con `require`
 para usarlo programáticamente.
 
-## 7. Hacker edition
-
-Las secciones llamadas _Hacker Edition_ son **opcionales**. Si **terminaste**
-con todo lo anterior y te queda tiempo, intenta completarlas. Así podrás
-profundizar y/o ejercitar más sobre los objetivos de aprendizaje del proyecto.
-
-* Puedes agregar la propiedad `line` a cada objeto `link` indicando en qué línea
-  del archivo se encontró el link.
-* Puedes agregar más estadísticas.
-* Integración continua con Travis o Circle CI.
-
 ***
 
-## 8. Pistas, tips y lecturas complementarias
+## 7. Pistas, tips y lecturas complementarias
 
 ### FAQs
 
@@ -368,8 +377,12 @@ si tienes dudas existenciales con respecto a estas decisiones. No existe una
 * [Leer un directorio](https://nodejs.org/api/fs.html#fs_fs_readdir_path_options_callback)
 * [Path](https://nodejs.org/api/path.html)
 * [Linea de comando CLI](https://medium.com/netscape/a-guide-to-create-a-nodejs-command-line-package-c2166ad0452e)
+- [Promise](https://javascript.info/promise-basics)
+- [Comprendiendo Promesas en Js](https://hackernoon.com/understanding-promises-in-javascript-13d99df067c1)
+- [Pill de recursión - video](https://www.youtube.com/watch?v=lPPgY3HLlhQ&t=916s)
+- [Pill de recursión - repositorio](https://github.com/merunga/pildora-recursion)
 
-## 9. Checklist
+## 8. Checklist
 
 ### General
 
