@@ -11,6 +11,9 @@
   /* object that parses html */
   const { Renderer } = require('marked');
 
+  /* fetch */
+  const fetch = require('node-fetch');
+
   /* \\Mis Documentos\\Laboratoria\\mdlinks\\LIM013-fe-md-links;
   E:\\Mis Documentos\\Laboratoria\\mdlinks\\LIM013-fe-md-links\\Assets\\hola.md 
   E:\\Mis Documentos\\Laboratoria\\mdlinks\\LIM013-fe-md-links\\Assets\\carpeta 1\\soy.md*/
@@ -20,11 +23,7 @@
   const isValid = (route) => fs.existsSync(route);
   console.log("must be true", isValid(route));
 
-  /*  const isAbsolute = path.isAbsolute(route);
-      const transformedPath = path.resolve(route);
-   -> A TypeError is thrown if path is not a string. -> Output Error
-  
-   Debe devolver un string*/
+  /* Debe devolver un string*/
   const transformPath = (route) => {
     if (!path.isAbsolute(route)) {
       return route ;
@@ -52,8 +51,10 @@ Args: route (absolute path) / arrayOfFiles (files in directory)
 
 /* __dirname is an environment variable de NODE that tells you the absolute path 
 of the directory containing the currently executing file. */
+
 /* CUANDO ARRAYOFFILES.LENGTH SEA 0? */
 
+/* Retorna el objeto fs.Stats que tiene la info dobre un archivo.*/
   const getAllFiles = (route, arrayOfFiles) => {  
     arrayOfFiles = [];
 
@@ -98,16 +99,13 @@ of the directory containing the currently executing file. */
   /*  LF will be replaced by CRLF in package.json. */
   console.log("soy markdown", mdFiles);
   
-
-
 /* Arg: array de rutas .md
 Returns array with links properties*/
 const mdLinks = (routes) => {
-  const linksProperty = [];
+  const linksProperties = [];
   
   /* Return an array with the content (string) of every path file (string)*/
   const parseLinks = routes.map((file) => {
-    console.log('soy cada file', file);
     /*Puede estar VACÍO: output: error, archivo vacío. string vacío. cuando tooodo textFile es vacio, deberia dar error*/
     /* Read the file and returns a string with the content */
     const contentFile = fs.readFileSync(file, "utf-8");
@@ -116,10 +114,10 @@ const mdLinks = (routes) => {
       link(href, title, text) {
         const objectProperty = {
           href,
-          title: text,
-          text: file,
+          text: text.slice(0, 49),
+          file: file,
         };
-        linksProperty.push(objectProperty);
+        linksProperties.push(objectProperty);
       }
     };
 
@@ -130,18 +128,62 @@ const mdLinks = (routes) => {
     marked(contentFile);
   });
 
-  return linksProperty;
+  return linksProperties;
 };
 
 console.log('array de objetos con propiedades de links', mdLinks(mdFiles));
- 
-  /* 
-  fs.statSync(path[, options])
-  options <Object>
-    bigint <boolean> Whether the numeric values in the returned fs.Stats object should be bigint. Default: false.
-    throwIfNoEntry <boolean> Whether an exception will be thrown if no file system entry exists, rather than returning undefined. Default: true.
 
-Retorna el objeto fs.Stats que tiene la info dobre un archivo.*/
+const linksProperties = mdLinks(mdFiles);
+
+const options = {
+  /* Booleano que determina si se desea validar los links encontrados. */
+  validate: (links) => { 
+    const arrayOfPromises = [];
+    links.forEach( (link) => { 
+      arrayOfPromises.push( fetch(link.href)
+      /* por que punto y coma y no solo coma? como en la otra funcion */
+        .then(response =>  { 
+          return {
+            href: link.href,
+            text: link.text,
+            file: link.file,
+            status: response.status,
+            statusText: response.statusText, };
+          
+        })
+        .catch(response => { 
+          return {
+            href: link.href,
+            text: link.text,
+            file: link.file,
+            status: 404,
+            statusText: "fail", };
+          
+        }));
+    });
+    console.log(arrayOfPromises);
+    return Promise.all(arrayOfPromises);
+  },
+
+  stats: (links) => {
+    return links.length;
+  },
+ };
+
+ /* console.log(options.validate(linksProperties)); */
+/* SALE UNDEFINED
+POR QUE CUANDO USABA PROMESAS DE FIREBASE, PODIA RETORNAR UN CONSOLE.LOG */
+options.validate(linksProperties).then(res=> { console.log("soy el.then del final", res);  return res});
+console.log("total links", options.stats(linksProperties));
+
+
+ /* BOTA UN objeto RESPONSE, con propiedades: url es el href  status: 200 statusText OK counter 0 */
+/*  console.log("VALIDATE", result); */
+
+
+
+
+  
   
 /* console.log("Path is file:", fs.statSync(absolutePath).isFile()); 
 console.log("Path is directory:", fs.statSync(absolutePath).isDirectory());  */
