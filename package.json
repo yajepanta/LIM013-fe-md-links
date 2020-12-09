@@ -7,6 +7,8 @@
     "test": "test"
   },
   "scripts": {
+    "eslint": "eslint --ext .js src/ test/",
+    "pretest": "npm run eslint",
     "test": "jest --verbose --coverage",
     "start": "node index.js"
   },
@@ -15,18 +17,17 @@
     "url": "git+https://github.com/yajepanta/LIM013-fe-md-links.git"
   },
   "author": "Yaje Panta <yajepanta@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/yajepanta/LIM013-fe-md-links/issues"
   },
   "homepage": "https://github.com/yajepanta/LIM013-fe-md-links#readme",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.8.2",
-    "@typescript-eslint/parser": "^4.8.2",
-    "eslint": "^7.14.0",
+    "eslint": "^7.15.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^22.1.2",
     "jest": "^26.6.3"
   },
   "dependencies": {
