@@ -2,25 +2,28 @@
 
 /* module.exports = () => { */
 
-  /* módulo fs: nos sirve para interactuar con el sistema de archivos. */
+  /* module fs: interacts with file system. */
   const fs = require('fs');
-
-  /* módulo path: nos sirve para trabajar con RUTAS de archivos y directorios */
+  /* module path: works with files and directories */
   const path = require('path');
+  /* library for parsing .md */
+  const marked = require('marked');
+  /* object that parses html */
+  const { Renderer } = require('marked');
 
   /* \\Mis Documentos\\Laboratoria\\mdlinks\\LIM013-fe-md-links;
-  E:\\Mis Documentos\\Laboratoria\\mdlinks\\LIM013-fe-md-links\\Assets\\hola.md */
-   const route = "\\Mis Documentos\\Laboratoria\\mdlinks\\LIM013-fe-md-links\\Assets";
+  E:\\Mis Documentos\\Laboratoria\\mdlinks\\LIM013-fe-md-links\\Assets\\hola.md 
+  E:\\Mis Documentos\\Laboratoria\\mdlinks\\LIM013-fe-md-links\\Assets\\carpeta 1\\soy.md*/
+   const route = "E:\\Mis Documentos\\Laboratoria\\mdlinks\\LIM013-fe-md-links\\Assets";
 
-  /* Comprobamos que existe "path", path puede ser string, objeto URL o Buffer(bits). Método síncrono, no recibe callback
-  Retorna un boolean */
-  const isValid = fs.existsSync(route);
-  console.log("must be true", isValid);
+  /* Function to validate path. Returns boolean. */
+  const isValid = (route) => fs.existsSync(route);
+  console.log("must be true", isValid(route));
 
   /*  const isAbsolute = path.isAbsolute(route);
       const transformedPath = path.resolve(route);
    -> A TypeError is thrown if path is not a string. -> Output Error
-   
+  
    Debe devolver un string*/
   const transformPath = (route) => {
     if (!path.isAbsolute(route)) {
@@ -31,67 +34,106 @@
       return path.resolve(route);
     }
   };
-/* should be a string */
+
+/* String with the transformed path */
   const absolutePath = transformPath(route);
   console.log("should return an absolute", absolutePath);
 
-/*   console.log(fs.readdirSync("E:\\Mis Documentos\\Laboratoria\\mdlinks\\LIM013-fe-md-links\\Assets")); */
+/* recursive function
+Args: route (absolute path) / arrayOfFiles (files in directory)
+1. Is Dir:  -read dir -> return array of only names 
+            -read names (as a path) -> if is directory, arrayOfFiles retorna al caso base con el path 
+                                        del directorio + arrayOfFiles
+                                        luego vuelve a ver si es directorio o file
+                                    -> if is file, push path of file with path.join(),
+                                         joins all given path using the separator, then normalizes the path.
+2. Is File: push path of file 
+¿Qué pasa si después del file justo está colocado el directory */
 
-/* __dirname is an environment variable de NODE that tells you the absolute path of the directory containing the currently executing file. */
-  const getAllFiles = (dirPath, arrayOfFiles) => {
-    files = fs.readdirSync(dirPath)
-    /* 1: es undefined. por que? es el segundo parámetro que recibe la función pero no tiene nada aún, no está definido. */
-    console.log("1", arrayOfFiles);
+/* __dirname is an environment variable de NODE that tells you the absolute path 
+of the directory containing the currently executing file. */
+/* CUANDO ARRAYOFFILES.LENGTH SEA 0? */
 
-    arrayOfFiles = arrayOfFiles || []
+  const getAllFiles = (route, arrayOfFiles) => {  
+    arrayOfFiles = [];
 
-    /* 2: acá ya definimos el 2do parámetro con un array vacío, y empieza a ser vacío de ahí en adelante*/
-    console.log("2", arrayOfFiles);
+    /* if is a directory */
+    if (fs.statSync(route).isDirectory()) {
+      const files = fs.readdirSync(route);
+      files.forEach((file) => {
+        if (fs.statSync(route + "/" + file).isDirectory()) {
+          arrayOfFiles = getAllFiles(route + "/" + file, arrayOfFiles);
+        } else {
+          /*  */
+          arrayOfFiles.push(path.join(route, "/", file))
+        }
+      })
+    }
 
-    files.forEach((file) => {
-      if (fs.statSync(dirPath + "/" + file).isDirectory()) {
-
-        /* acá array of files debería ser vacío la primera vez */
-        console.log("3", arrayOfFiles);
-
-        /* como es directorio, vuelvo a ejecutar la función con el path y el array vacío */
-        arrayOfFiles = getAllFiles(dirPath + "/" + file, arrayOfFiles);
-
-        /* acá se llenaría recién la segunda vez. argumento: la dirección exacta del path analizado, y agregando el array vacío */
-        console.log("4", arrayOfFiles);
-
-      } else {
-        arrayOfFiles.push(path.join(dirPath, "/", file))
-      }
-    })
-
-    /* debería ser igual a todos los archivos listados */
-    console.log("5", arrayOfFiles);
-    return arrayOfFiles
+    /* if is a file */
+    if (fs.statSync(route).isFile()) {
+      arrayOfFiles.push(route);
+    }
+    return arrayOfFiles;
   }
 
+  /* Run getAllFiles */
   const allFiles = getAllFiles(absolutePath);
-  console.log("final", allFiles );
+  console.log("arrayOfFiles:", allFiles );
  
-  /* Retorna un string con la porción desde el . hasta el final
-  si no hay punto, o sea si es dir?, retorna un string vacío 
-  isMarkdown: 
-    es funcion, argumento: array de strings
-    debe iterar cada elemento del array, o sea cada ruta, y sacar el path.extname para comparar si es .md
-    debe guardar la ruta de todos files que cumplan con = .md en otro array de strings
-    return: array con files md
-  */
- 
+ /* function. Returns an array of md files */
   const isMarkdown = (files) => {
-    
-    /* diferenciar bien entre foreach y map. map nocambia el array, foreach tmpo, map se puede almacenar. foreach? */
+    /* path.extname returns the string between . and the end. including "." */
     const arrayOfFiles = files.filter((file) => path.extname(file) == '.md');
     return arrayOfFiles;
-
   }
+
+  /* Run isMarkdown with the array of files */
+  const mdFiles = isMarkdown(allFiles);
+
+  if (mdFiles.length == 0) {
+    console.log("error, no hay archivos markdown");
+  }
+  
   /*  LF will be replaced by CRLF in package.json. */
-  console.log("soy markdown GAA", isMarkdown(allFiles));
- 
+  console.log("soy markdown", mdFiles);
+  
+
+
+/* Arg: array de rutas .md
+Returns array with links properties*/
+const mdLinks = (routes) => {
+  const linksProperty = [];
+  
+  /* Return an array with the content (string) of every path file (string)*/
+  const parseLinks = routes.map((file) => {
+    console.log('soy cada file', file);
+    /*Puede estar VACÍO: output: error, archivo vacío. string vacío. cuando tooodo textFile es vacio, deberia dar error*/
+    /* Read the file and returns a string with the content */
+    const contentFile = fs.readFileSync(file, "utf-8");
+
+    const renderer = {
+      link(href, title, text) {
+        const objectProperty = {
+          href,
+          title: text,
+          text: file,
+        };
+        linksProperty.push(objectProperty);
+      }
+    };
+
+    /* marked uses option RENDERER */
+    marked.use({ renderer });
+
+    /* run marked with the content, but in html */
+    marked(contentFile);
+  });
+
+  return linksProperty;
+};
+
+console.log('array de objetos con propiedades de links', mdLinks(mdFiles));
  
   /* 
   fs.statSync(path[, options])
@@ -110,8 +152,6 @@ Retorna arreglo de strings con los nombres de los files adentro
 Puedo poner que si es directorio, siga accediendo, y si no, que liste el nombre del file*/
 
   /* SÍ VA ESTO const isEmpty = fs.readdirSync(route); */ 
-
- 
   
   /*  entonces:
   podría de una vez analizar todos los archivos dentro, y si isEmpty.length es 0 -> Error: El directorio está vacío
@@ -125,12 +165,56 @@ Puedo poner que si es directorio, siga accediendo, y si no, que liste el nombre 
   pseudocódigo
   if file.length=vacio: return error.
   else: debe entrar a cada file y comprobar isDir isFile, recibe como parametro la ruta
-        foreach retorno de fxqueleecontenido fs.readdirSync ( (para cada file) => { 
-                                                          if isDir: if ( fs.statSync(route + "\\" + file).isDirectory() )
+        foreach retorno de  fs.readdirSync ( (para cada file) => { 
+                                                           if isDir: if ( fs.statSync(route + "\\" + file).isDirectory() )
                                                           else isFile: analizar si es .md y guardar el path
   })
  
   */
-/* }; */
-/* /\W(md)/ */
+
+
+
 module.exports = isValid, absolutePath;
+
+
+/* const getLinks = (route) => {
+  const arrayMd = getMd(route);
+  const arrMdLinks = [];
+  arrayMd.forEach((file) => {
+    const mdText = (pathMd) => fs.readFileSync(pathMd, "utf-8");
+    const renderer = new marked.Renderer()
+    renderer.link = 
+    (href, title, text) => {
+        const object = {
+          href,
+          text,
+          file,
+        };
+        arrMdLinks.push(object);
+      };
+      marked(mdText(file), {renderer});
+    });
+  
+  return arrMdLinks;
+  }; */
+
+/* const renderer = {
+  link(href, title, text) {
+    const object = {
+      href,
+      title,
+      text,
+    };
+
+    return console.log('soy objeto renderer', object);
+  }
+};
+
+  marked.use({ renderer }); */
+
+  /* 1. Necesito una función que lea 1 por 1 cada ruta del array de rutas md
+2. Que de cada ruta, renderice el href, text en un objeto y lo envie a un array. 
+3. Debe retornarme ese array de objetos
+Conclusión: 1 gran función que reciba el array de rutas, itere file por file,
+ y dentro incluir la función que lee y la función que renderiza
+ */

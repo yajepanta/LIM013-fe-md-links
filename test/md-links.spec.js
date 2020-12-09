@@ -1,4 +1,4 @@
-const mdLinks = require('../');
+/* const mdLinks = require('../'); */
 const isValid = require('../index.js');
 const isAbsolute = require('../index.js');
 const transformedPath = require('../index.js');
