@@ -31,7 +31,7 @@ const transformPath = (route) => {
 /* String with the transformed path */
 const absolutePath = transformPath(routetest);
 console.log('should return an absolute', absolutePath);
-
+console.log('ruta. cambia?', routetest);
 /* recursive function
 Args: route (absolute path) / arrayOfFiles (files in directory)
 1. Is Dir:-read dir -> return array of only names
@@ -80,7 +80,7 @@ const isMarkdown = (files) => {
   /* path.extname returns the string between . and the end. including '
 .'
  */
-  const arrayOfFiles = files.filter((file) => path.extname(file) == '.md');
+  const arrayOfFiles = files.filter((file) => path.extname(file) === '.md');
   return arrayOfFiles;
 };
 
