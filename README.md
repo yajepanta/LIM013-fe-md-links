@@ -6,7 +6,7 @@ Md-Links is a library that parses links inside a markdown file. Validate links a
 
 
 ## 2. Flowchart
-![Flowchart](E:\Mis Documentos\Laboratoria\mdlinks\LIM013-fe-md-links\Recursos\MD LINKS.png)
+![Flowchart](Recursos/flowchart.png)
 
 ## 3. Getting started
 
