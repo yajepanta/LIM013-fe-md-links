@@ -1,7 +1,7 @@
 {
   "name": "lim013-fe-md-links",
   "version": "1.0.0",
-  "description": "md-links-library",
+  "description": "Library that parses links inside a markdown file. Validate links and show stats.",
   "main": "index.js",
   "directories": {
     "test": "test"
@@ -10,7 +10,7 @@
     "eslint": "eslint --ext .js src/ test/",
     "pretest": "npm run eslint",
     "test": "jest --verbose --coverage",
-    "start": "node index.js"
+    "start": "node md-links.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,14 @@
   "bugs": {
     "url": "https://github.com/yajepanta/LIM013-fe-md-links/issues"
   },
+  "bin": {
+    "md-links": "./cli.js"
+  },
+  "keywords": [
+    "markdown",
+    "links",
+    "parse"
+  ],
   "homepage": "https://github.com/yajepanta/LIM013-fe-md-links#readme",
   "devDependencies": {
     "eslint": "^7.15.0",
@@ -31,6 +39,9 @@
     "jest": "^26.6.3"
   },
   "dependencies": {
+    "colors": "^1.4.0",
+    "commander": "^6.2.1",
+    "inquirer": "^7.3.3",
     "marked": "^1.2.5",
     "node-fetch": "^2.6.1"
   }

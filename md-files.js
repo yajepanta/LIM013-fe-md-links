@@ -31,16 +31,16 @@ Args: route (absolute path) / arrayOfFiles (files in directory)
 /* __dirname is an environment variable de NODE that tells you the absolute path
 of the directory containing the currently executing file. */
 
-/* Object fs.Stats has file info. Method: isDirectory/isFile */
-const getAllFiles = (route, arrayOfFiles) => {
-  arrayOfFiles = [];
+/* Object fs.Stats has file info. Method: isDirectory/isFile , arrayOfFiles */
+const getAllFiles = (route) => {
+  let arrayOfFiles = [];
 
   /* if is a directory */
   if (fs.statSync(route).isDirectory()) {
     const files = fs.readdirSync(route);
     files.forEach((file) => {
       if (fs.statSync(`${route}/${file}`).isDirectory()) {
-        arrayOfFiles = getAllFiles(`${route}/${file}`, arrayOfFiles);
+        arrayOfFiles = getAllFiles(path.join(route, '/', file), arrayOfFiles);
       } else {
         arrayOfFiles.push(path.join(route, '/', file));
       }
@@ -55,7 +55,7 @@ const getAllFiles = (route, arrayOfFiles) => {
 };
 
 /* Argument: array of files of path. Returns an array of .md files.  */
-const isMarkdown = (route) => {
+const getMarkdownFiles = (route) => {
   /* Run getAllFiles */
   const allFiles = getAllFiles(route);
   /* path.extname returns the string between . and the end, including '.' */
@@ -63,11 +63,12 @@ const isMarkdown = (route) => {
   return arrayOfFiles;
 };
 
-console.log('Array de archivos Markdown:', isMarkdown('\\Mis Documentos\\Laboratoria\\mdlinks\\LIM013-fe-md-links\\Assets'));
-
+/* console.log('Array de archivos Markdown:', getMarkdownFiles('\\Mis Documentos\\Laboratoria\\
+mdlinks\\LIM013-fe-md-links\\Assets'));
+ */
 module.exports = {
   isValid,
   transformPath,
   getAllFiles,
-  isMarkdown,
+  getMarkdownFiles,
 };

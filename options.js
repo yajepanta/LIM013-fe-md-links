@@ -2,8 +2,8 @@
 const fetch = require('node-fetch');
 const { parseLinks } = require('./parse-md-files');
 
+/* POR QUÉ CUANDO USABA PROMESAS DE FIREBASE, PODIA RETORNAR UN CONSOLE.LOG? */
 module.exports = {
-  /* Booleano que determina si se desea validar los links encontrados. */
   validate: (route) => {
     const links = parseLinks(route);
     const arrayOfPromises = [];
@@ -24,9 +24,9 @@ module.exports = {
           statusText: 'fail',
         })));
     });
-    console.log('pending promises', arrayOfPromises);
+    /* console.log('pending promises', arrayOfPromises); */
     return Promise.all(arrayOfPromises);
   },
 
-  stats: (links) => links.length,
+  /* stats: (links) => links.length, */
 };

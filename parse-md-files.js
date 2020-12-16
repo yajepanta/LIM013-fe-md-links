@@ -4,12 +4,12 @@ const fs = require('fs');
 const marked = require('marked');
 /* object that parses html */
 const { Renderer } = require('marked');
-const { isMarkdown } = require('./md-files.js');
+const { getMarkdownFiles } = require('./md-files.js');
+
 /*  Argument: array de rutas .md
-Returns array with links properties
-readLinks */
+Returns array with links properties */
 const parseLinks = (route) => {
-  const mdFiles = isMarkdown(route);
+  const mdFiles = getMarkdownFiles(route);
   const linksProperties = [];
   /*  Return an array with the content (string) of every path file (string) */
   mdFiles.forEach((file) => {
@@ -37,6 +37,7 @@ const parseLinks = (route) => {
   return linksProperties;
 };
 
-console.log('Array de objetos con propiedades de links:', parseLinks('E:\\Mis Documentos\\Laboratoria\\mdlinks\\LIM013-fe-md-links\\Assets'));
-
+/* console.log('Array de objetos con propiedades de links:', 
+parseLinks('E:\\Mis Documentos\\Laboratoria\\mdlinks\\LIM013-fe-md-links\\Assets'));
+ */
 module.exports = { parseLinks };

@@ -1,12 +1,37 @@
 const { parseLinks } = require('./parse-md-files');
-const { validate, stats } = require('./options.js');
+const { validate } = require('./options.js');
+const {
+  isValid,
+  transformPath,
+  getAllFiles,
+  getMarkdownFiles,
+} = require('./md-files.js');
 
-/* POR QUÉ CUANDO USABA PROMESAS DE FIREBASE, PODIA RETORNAR UN CONSOLE.LOG? */
-
-parseLinks('E:\\Mis Documentos\\Laboratoria\\mdlinks\\LIM013-fe-md-links\\Assets');
-validate('E:\\Mis Documentos\\Laboratoria\\mdlinks\\LIM013-fe-md-links\\Assets').then((res) => {
-  console.log('soy el.then del final', res);
-  return res;
+const mdLinks = (path, options) => new Promise((resolve, reject) => {
+  if (!isValid(path)) {
+    reject(new Error('Ruta inválida'));
+  }
+  const route = transformPath(path);
+  if (getAllFiles(route).length === 0) {
+    reject(new Error('El directorio está vacío'));
+  }
+  if (getMarkdownFiles(route).length === 0) {
+    reject(new Error('El directorio no tiene archivos markdown'));
+  }
+  if (!options) {
+    resolve(new parseLinks(route));
+  }
+  if (options.validate) {
+    validate(route).then((parsedLinks) => resolve(parsedLinks));
+  } else {
+    resolve(parseLinks(route));
+  }
 });
 
-console.log('total links', stats('E:\\Mis Documentos\\Laboratoria\\mdlinks\\LIM013-fe-md-links\\Assets'));
+module.exports = {
+  mdLinks,
+};
+
+// eslint-disable-next-line max-len
+/* mdLinks('E:\\Mis Documentos\\Laboratoria\\mdlinks\\LIM013-fe-md-links\\Assets', { validate: true })
+  .then((validatelinks) => console.log('links de mdlinks', validatelinks)); */

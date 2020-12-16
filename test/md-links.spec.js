@@ -1,7 +1,7 @@
 /* const mdLinks = require('../'); */
-const isValid = require('../index.js');
-const isAbsolute = require('../index.js');
-const transformedPath = require('../index.js');
+const isValid = require('../md-files.js');
+const isAbsolute = require('../md-files.js');
+const transformedPath = require('../md-files.js');
 /* describe('mdLinks', () => {
   it('should...', () => {
     console.log('FIX ME!');
